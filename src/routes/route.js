@@ -1,3 +1,4 @@
+const bodyParser = require('body-parser');
 const express = require('express');
 //const abc = require('../introduction/intro')
 const router = express.Router();
@@ -42,32 +43,89 @@ const router = express.Router();
 //         res.send(films[filmid])
 //     }
 //})
-router.get("/sol1", function (req, res) {
-    let array=[1,2,3,5,6,7]
-    let n=array.length+1 
-    let sumOfnaturalNumber =n*(1+7)/2
-    let sumOfarray=0
-    for(let i=0;i<array.length;i++){
-        let element = array[i]
-        sumOfarray+=element
-    }
-    let result = sumOfnaturalNumber-sumOfarray
-    console.log({missingNumber:result})
-    res.send( {missingNumber:result});
-    });
+// const express = require('express');
+ 
+let players =
+   [
+       {
+           "name": "manish",
+           "dob": "1/1/1995",
+           "gender": "male",
+           "city": "jalandhar",
+           "sports": [
+               "swimming"
+           ]
+       },
+       {
+           "name": "gopal",
+           "dob": "1/09/1995",
+           "gender": "male",
+           "city": "delhi",
+           "sports": [
+               "soccer"
+           ],
+       },
+       {
+           "name": "lokesh",
+           "dob": "1/1/1990",
+           "gender": "male",
+           "city": "mumbai",
+           "sports": [
+               "soccer"
+           ],
+       },
+   ]
+ 
+   router.post('/players', function (req, res) {
+    const body=req.body
+    const player= players.find(x=>x.name === body.name)
+      if (player){
+        console.log({message:"player already exist"})
+        return res.send({message:"player already exist"})
+      } else{
+        players.push(body)
+        console.log(players)
+        return res.send(players)
+      }
+   })
 
-    router.get("/sol2", function (req, res) {
-        let arr= [33, 34, 35, 37, 38]
-        let n=arr.length+1 
-        let sumOfnaturalNumber =n*(33+38)/2  //logic : sum of n consecutive numbers is [ n * (first + last) / 2 ]..so get sum of all
-        let sumOfarray=0
-        for(let i=0;i<arr.length;i++){
-            let element = arr[i]
-            sumOfarray+=element
-        }
-        let result = sumOfnaturalNumber-sumOfarray
-        console.log({missingNumber:result})
-        res.send({missingNumber:result});
-        });
+//    let persons= [
+//     {
+//     name: "PK",
+//     age: 10,
+//     votingStatus: false
+//  },
+//  {
+//     name: "SK",
+//     age: 20,
+//     votingStatus: false
+//  },
+//  {
+//     name: "AA",
+//     age: 70,
+//     votingStatus: false
+//  },
+//  {
+//     name: "SC",
+//     age: 5,
+//     votingStatus: false
+//  },
+//  {
+//     name: "HO",
+//     age: 40,
+//     votingStatus: false
+//  }
+//  ]
+//    router.post('/person',function(req,res){
+//     const votingAge=req.query.votingAge
 
+//     const updatedPersons =[]
+//     persons.forEach((person) => {
+//         if(person.age>votingAge){
+//             person.votingStatus=true
+//             updatedPersons.push(person)
+//         }
+//     });
+//     return res.send({updatedPersons:updatedPersons})
+// })
 module.exports = router;
