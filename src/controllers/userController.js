@@ -1,7 +1,21 @@
 const UserModel= require("../models/userModel")
+const userdoc= require("../models/orderDocument" )
 
-
-
+const createnewuser= async function (req, res) {
+    let data = req.body
+    let savedData= await userdoc.create(data)
+    res.send({data: savedData})
+}
+const createnewproduct= async function (req, res) {
+    let data = req.body
+    let savedData= await userdoc.create(data)
+    res.send({data: savedData})
+}
+const createneworder= async function (req, res) {
+    let data = req.body
+    let savedData= await userdoc.create(data)
+    res.send({data: savedData})
+}
 
 const basicCode= async function(req, res, next) {
     console.log( "HEADER DATA ABOVE")
@@ -50,3 +64,6 @@ module.exports.getUsersData= getUsersData
 module.exports.basicCode= basicCode
 module.exports.dummyOne = dummyOne
 module.exports.dummyTwo = dummyTwo
+module.exports.createnewuser=createnewuser
+module.exports.createnewproduct=createnewproduct
+module.exports.createneworder=createneworder
