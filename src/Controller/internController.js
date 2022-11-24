@@ -19,12 +19,14 @@ let newData= async function(req,res){
         let checkDuplicate2 = await internModel.findOne({ mobile: data.mobile })
         if (checkDuplicate2)return res.status(400).send({ status: false, msg: "mobile number is already exist."})
 
-        if (!collegeId) return res.status(400).send({ status: false, message: "collegeId required" })
-
-        let collegeid = await collegeModel.findById({ _id: data.collegeId })
-        if (!collegeid) return res.status(404).send({ message: "this is not valid id" })
-        const createinterns = await internModel.create(data)
-        res.status(201).send({status : true, data : createinterns})
+        let college = await collegeModel.findOne({ name: collegeName })
+        if (!college) {
+            return res.status(404).send({ status: false, message: 'This college does not exists' })
+        }
+        collegeId = college._id
+        let finalData = {Name, email, mobile, collegeId}
+        let interns = await internModel.create(finalData)
+        return res.status(201).send({ status: true, data: interns })
 
     }catch(error){
         res.status(500).send({ status: false, message: error.message, message: " server error" })
