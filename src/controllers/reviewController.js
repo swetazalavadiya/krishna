@@ -17,7 +17,7 @@ const createReview = async function (req, res) {
 
         let data = req.body
 
-        if (Object.keys(data).length == 0 || Object.keys(data).length > 4) return res.status(400).send({ status: false, message: "Oooh... req body is empty" })
+        if (Object.keys(data).length == 0 || Object.keys(data).length > 5) return res.status(400).send({ status: false, message: "Oooh... req body is empty" })
 
         let { reviewedBy, rating, review } = data
 
@@ -36,13 +36,13 @@ const createReview = async function (req, res) {
         }
 
         const bookdata = await bookModel.findOneAndUpdate({ _id: bookId }, { $inc: { reviews: 1 } }) 
-       if(bookdata.isDeleted)return res.status(400).send({status:false,msg:"book is already deleted"})
+        if(bookdata.isDeleted)return res.status(400).send({status:false,msg:"book is already deleted"})
 
-        let saveddata = await reviewModel.create(creatData)
+        let saveddata = await (await reviewModel.create(creatData))
 
         let data2 = {
             ...bookdata._doc,
-            reviewData: saveddata
+            reviewData: saveddata.select({isDeleted:0})
         }
 
         return res.status(201).send({ status: true, msg: "review added successfully", Data: data2 })
