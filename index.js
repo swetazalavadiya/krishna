@@ -10,11 +10,11 @@ app.use( multer().any())
 app.use(express.json())
 
 
-mongoose.connect("mongodb+srv://Vashika:Vanshikaa08@cluster0.on6mcgr.mongodb.net/test")
+mongoose.connect("mongodb+srv://prakashurkude:prakash1998@cluster0.nuhssqs.mongodb.net/group8Database")
 .then(() => console.log("MongoDB is connected"))
 .catch((error) => console.log(error))
 
-
+kdnkandamm
 
 app.use('/', route);
 
