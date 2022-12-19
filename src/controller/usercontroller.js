@@ -2,9 +2,30 @@ const { isValidName, forName, isValidEmail, isValidNumber, isValidPassword, isVa
 const userModel= require('../models/usermodel.js')
 
 
+const registerUser = async function(req, res){
+    try{
+    
+        // checking requirements
+        if(Object.keys(req.body).length==0){return res.status(400).send({status:false, message:"body is important"})}
+        if(!req.body.fname){ return res.status(400).send({status:false, message:"fname is mandatory"})}
+        if(!req.body.lname){return res.status(400).send({status:false, message:"lname is mandatory"})}
+        if(!req.body.email){return res.status(400).send({status:false, message:"email is mandatory"})}
+        if(!req.body.profileImage){return res.status(400).send({status:false, message:"profileImage is mandatory"})}
+        if(!req.body.phone){return res.status(400).send({status:false, message:"phone is mandatory"})}
+        if(!req.body.password){return res.status(400).send({status:false, message:"password is mandatory"})}
+        
+        req.body.address=JSON.parse(req.body.address)
+       
+        if(!req.body.address.shipping.street){return res.status(400).send({status:false, message:"street is mandatory"})}
+        if(!req.body.address.shipping.city){return res.status(400).send({status:false, message:"city is mandatory"})}
+        if(!req.body.address.shipping.pincode){return res.status(400).send({status:false, message:"pincode is mandatory"})}
+        if(!req.body.address.billing.street){return res.status(400).send({status:false, message:"street is mandatory"})}
+        if(!req.body.address.billing.city){return res.status(400).send({status:false, message:"city is mandatory"})}
+        if(!req.body.address.billing.pincode){return res.status(400).send({status:false, message:"pincode is mandatory"})}
+        
+    
 
-
-    // validation starts
+        // validation starts
     if(!forName(req.body.fname) || !isValidName(req.body.fname)){return res.status(400).send({status:false, message:"fname is not valid"})}
     if(!forName(req.body.lname) || !isValidName(req.body.lname)){return res.status(400).send({status:false, message:"lname is not valid"})}
     if(!forName(req.body.fname) || !isValidName(req.body.fname)){return res.status(400).send({status:false, message:"fname is not valid"})}
