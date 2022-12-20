@@ -83,7 +83,7 @@ const userLogIn = async function (req, res) {
         try{
             const userId = req.params.userId
             if(!isValidObjectId(userId)) return res.status(400).send({status:false,message:"Enter a valid userId"})
-            if(!req["decodedToken"]._id == userId) return res.status(401).send({staus:false,message:"Not Authorized"})
+            //if(!req["decodedToken"]._id == userId) return res.status(401).send({staus:false,message:"Not Authorized"})
     
             const user = await userModel.findById(userId)
             let {fname,lname,email,profileImage,phone,password,address,_id} = user
