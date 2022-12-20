@@ -14,7 +14,7 @@ mongoose.connect("mongodb+srv://prakashurkude:prakash1998@cluster0.nuhssqs.mongo
 .then(() => console.log("MongoDB is connected"))
 .catch((error) => console.log(error))
 
-kdnkandamm
+
 
 app.use('/', route);
 
