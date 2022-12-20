@@ -50,7 +50,7 @@ const registerUser = async function(req, res){
     req.body.password=await bcrypt.hash(req.body.password,1 )
     //==========================================================
     // storing document
-    res.status(201).send({status:true, message: "User created successfully", data:await userModel.create(req.body)})}
+    return res.status(201).send({status:true, message: "User created successfully", data:await userModel.create(req.body)})}
     catch(err){res.status(500).send({status:false, message:"Internal Server Error"})}}
 
 
@@ -105,42 +105,54 @@ const userLogIn = async function (req, res) {
 
     const updateUser = async function(req, res){
         try{
-        
-            // checking requirements
-            if(Object.keys(req.body).length==0){return res.status(400).send({status:false, message:"body is important"})}
-            
-            req.body.address=JSON.parse(req.body.address)
-           
-            
+        // checking requirements
+        if(Object.keys(req.body).length==0){return res.status(400).send({status:false, message:"body is important to update a document"})}
         
         // validation starts
-        if(fname){
+        if(req.body.fname){
         if(!forName(req.body.fname) || !isValidName(req.body.fname)){return res.status(400).send({status:false, message:"fname is not valid, first letter should be in capital case."})}}
-        if(lname){
+        if(req.body.lname){
         if(!forName(req.body.lname) || !isValidName(req.body.lname)){return res.status(400).send({status:false, message:"lname is not valid, first letter should be in capital case."})}}
-        if(!isValidName(req.body.email|| !isValidEmail(req.body.email))){return res.status(400).send({status:false, message:"email is not valid"})}
-        if(!isValidName(req.body.profileImage)){return res.status(400).send({status:false, message:"profileImage is not valid"})}
-        if(!isValidName(req.body.phone|| !isValidNumber(req.body.phone))){return res.status(400).send({status:false, message:"phone no. is not valid"})}
+        if(req.body.email){
+        if(!isValidName(req.body.email|| !isValidEmail(req.body.email))){return res.status(400).send({status:false, message:"email is not valid"})}}
+        if(req.body.profileImage){
+        if(!isValidName(req.body.profileImage)){return res.status(400).send({status:false, message:"profileImage is not valid"})}}
+        if(req.body.phone){
+        if(!isValidName(req.body.phone|| !isValidNumber(req.body.phone))){return res.status(400).send({status:false, message:"phone no. is not valid"})}}
+        if(req.body.password){
         if(!isValidName(req.body.password|| !isValidPassword(req.body.password))){return res.status(400).send({status:false, message:"password is not valid"})}
-        if(!isValidName(req.body.address.shipping.street)){return res.status(400).send({status:false, message:"street is not valid"})}
-        if(!isValidName(req.body.address.shipping.city)){return res.status(400).send({status:false, message:"city is not valid"})}
+    // encrypting the password
+        req.body.password=await bcrypt.hash(req.body.password,1 )}
+        if(req.body.address){
+        req.body.address=JSON.parse(req.body.address)
+        if(req.body.address.shipping){
+        if(req.body.address.shipping.street){
+        if(!isValidName(req.body.address.shipping.street)){return res.status(400).send({status:false, message:"street is not valid"})}}
+        if(req.body.address.shipping.city){
+        if(!isValidName(req.body.address.shipping.city)){return res.status(400).send({status:false, message:"city is not valid"})}}
+        if(req.body.address.shipping,pincode){
         if(!isValidPincode(req.body.address.shipping.pincode)){return res.status(400).send({status:false, message:"pincode is not valid"})}
-        req.body.address.shipping.pincode=Number(req.body.address.shipping.pincode)
-        if(!isValidName(req.body.address.billing.street)){return res.status(400).send({status:false, message:"street is not valid"})}
-        if(!isValidName(req.body.address.billing.city)){return res.status(400).send({status:false, message:"city is not valid"})}
+        req.body.address.shipping.pincode=Number(req.body.address.shipping.pincode)}}
+        if(req.body.address.billing){
+        if(req.body.address.billing.street){
+        if(!isValidName(req.body.address.billing.street)){return res.status(400).send({status:false, message:"street is not valid"})}}
+        if(req.body.address.billing.city){
+        if(!isValidName(req.body.address.billing.city)){return res.status(400).send({status:false, message:"city is not valid"})}}
+        if(req.body.address.billing.pincode){
         if(!isValidPincode(req.body.address.billing.pincode)){return res.status(400).send({status:false, message:"pincode is not valid"})}
-        req.body.address.billing.pincode=Number(req.body.address.billing.pincode)
+        req.body.address.billing.pincode=Number(req.body.address.billing.pincode)}}}
         //validation ends
         //==========================================================
         
         // checking uniqueness
-        if(await userModel.findOne({email:req.body.email, phone:req.body.phone})){return res.status(409).send({status:false, message:"this user is already exist"})}
+        if(req.body.email|| req.body.phone){
+        if(await userModel.findOne({email:req.body.email, phone:req.body.phone})){return res.status(409).send({status:false, message:"emailId or phone no. should be unique"})}}
         
-        // encrypting the password
-        req.body.password=await bcrypt.hash(req.body.password,1 )
         //==========================================================
-        // storing document
-        res.status(201).send({status:true, message: "User created successfully", data:await userModel.create(req.body)})}
+        // updating document
+        const updatedDetails= await userModel.findOneAndUpdate({_id:req.params.userId},{...req.body},{new:true})
+        if(!updatedDetails){return res.status(400).send({status:false, message:"this user is not registered with us."})}
+        return res.status(201).send({status:true, message: "User profile updated", data:updatedDetails})}
         catch(err){res.status(500).send({status:false, message:"Internal Server Error"})}}
     
     
@@ -149,6 +161,7 @@ const userLogIn = async function (req, res) {
 module.exports.getUserParam= getUserParam
 module.exports.registerUser= registerUser
 module.exports.userLogIn=userLogIn
+module.exports.updateUser=updateUser
 
 
 

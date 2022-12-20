@@ -7,6 +7,7 @@ const aws= require("aws-sdk")
  router.post('/register', usercontroller.registerUser)
  router.post('/login', usercontroller.userLogIn)
  router.get('/user/:userId/profile', usercontroller.getUserParam)
+ router.put('/user/:userId/profile', usercontroller.updateUser)
 
 
 
