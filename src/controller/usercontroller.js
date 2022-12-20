@@ -152,7 +152,7 @@ const userLogIn = async function (req, res) {
         // updating document
         const updatedDetails= await userModel.findOneAndUpdate({_id:req.params.userId},{...req.body},{new:true})
         if(!updatedDetails){return res.status(400).send({status:false, message:"this user is not registered with us."})}
-        return res.status(201).send({status:true, message: "User profile updated", data:updatedDetails})}
+        return res.status(200).send({status:true, message: "User profile updated", data:updatedDetails})}
         catch(err){res.status(500).send({status:false, message:"Internal Server Error"})}}
     
     
