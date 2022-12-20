@@ -3,7 +3,7 @@ const userModel= require('../models/usermodel.js')
 const bcrypt= require('bcrypt')
 const jwt= require('jsonwebtoken')
 
-
+// ........................................................................... POST API .......................................................................
 const registerUser = async function(req, res){
     try{
     
