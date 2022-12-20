@@ -64,7 +64,6 @@ const userLogIn = async function (req, res) {
         if (!req.body.password) { return res.status(400).send({ status: false, message: "password is mandatory" }) }
         if (req.body.email.length == 0 || req.body.password.length == 0) {return res.status(400).send({ status: false, message: "both fields are required." })}
         if (!isValidEmail(req.body.email)) {return res.status(400).send({ status: false, message: "email is not valid" })}
-        if (!isValidPassword(req.body.password)) {return res.status(400).send({ status: false, message: "password is not valid" })}
 
         // user is not registered
         const userDetail = await userModel.findOne({ email:req.body.email, password: req.body.password })
