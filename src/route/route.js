@@ -5,7 +5,7 @@ const usercontroller= require('../controller/usercontroller')
 const aws= require("aws-sdk")
 // .................................................. Users Api ....................................................................
  router.post('/register', usercontroller.registerUser)
- router.post('/userLogIn', usercontroller.userLogIn)
+ router.post('/login', usercontroller.userLogIn)
  router.get('/user/:userId/profile', usercontroller.getUserParam)
 
 
