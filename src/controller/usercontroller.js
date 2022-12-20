@@ -1,5 +1,6 @@
 const { isValidName, forName, isValidEmail, isValidNumber, isValidPassword, isValidObjectId, isValidPincode }= require('../validator/validation.js')
 const userModel= require('../models/usermodel.js')
+const bcrypt= require('bcrypt')
 
 
 const registerUser = async function(req, res){
@@ -22,10 +23,8 @@ const registerUser = async function(req, res){
         if(!req.body.address.billing.street){return res.status(400).send({status:false, message:"street is mandatory"})}
         if(!req.body.address.billing.city){return res.status(400).send({status:false, message:"city is mandatory"})}
         if(!req.body.address.billing.pincode){return res.status(400).send({status:false, message:"pincode is mandatory"})}
-        
     
-
-        // validation starts
+    // validation starts
     if(!forName(req.body.fname) || !isValidName(req.body.fname)){return res.status(400).send({status:false, message:"fname is not valid"})}
     if(!forName(req.body.lname) || !isValidName(req.body.lname)){return res.status(400).send({status:false, message:"lname is not valid"})}
     if(!forName(req.body.fname) || !isValidName(req.body.fname)){return res.status(400).send({status:false, message:"fname is not valid"})}
@@ -36,11 +35,14 @@ const registerUser = async function(req, res){
     if(!isValidName(req.body.address.shipping.street)){return res.status(400).send({status:false, message:"street is not valid"})}
     if(!isValidName(req.body.address.shipping.city)){return res.status(400).send({status:false, message:"city is not valid"})}
     if(!isValidPincode(req.body.address.shipping.pincode)){return res.status(400).send({status:false, message:"pincode is not valid"})}
+    req.body.address.shipping.pincode=Number(req.body.address.shipping.pincode)
     if(!isValidName(req.body.address.billing.street)){return res.status(400).send({status:false, message:"street is not valid"})}
     if(!isValidName(req.body.address.billing.city)){return res.status(400).send({status:false, message:"city is not valid"})}
     if(!isValidPincode(req.body.address.billing.pincode)){return res.status(400).send({status:false, message:"pincode is not valid"})}
+    req.body.address.billing.pincode=Number(req.body.address.billing.pincode)
     //validation ends
     //==========================================================
+    
     // checking uniqueness
     if(await userModel.findOne({email:req.body.email, phone:req.body.phone})){return res.status(409).send({status:false, message:"this user is already exist"})}
     
@@ -56,16 +58,13 @@ const registerUser = async function(req, res){
 
 const userLogIn = async function (req, res) {
     try {
-// validation and requirements
+        // validation and requirements
         if (Object.keys(req.body)== 0) {return res.status(400).send({ status: false, message: "email and password are required for Log in" })}
         if (!req.body.email) { return res.status(400).send({ status: false, message: "email is mandatory" }) }
         if (!req.body.password) { return res.status(400).send({ status: false, message: "password is mandatory" }) }
         if (req.body.email.length == 0 || req.body.password.length == 0) {return res.status(400).send({ status: false, message: "both fields are required." })}
         if (!isValidEmail(req.body.email)) {return res.status(400).send({ status: false, message: "email is not valid" })}
         if (!isValidPassword(req.body.password)) {return res.status(400).send({ status: false, message: "password is not valid" })}
-        
-        // encrypting the password
-        req.body.password=await bcrypt.hash(req.body.password,1 )
 
         // user is not registered
         const userDetail = await userModel.findOne({ email:req.body.email, password: req.body.password })
