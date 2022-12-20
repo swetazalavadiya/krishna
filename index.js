@@ -1,6 +1,6 @@
 const express = require("express")
 const mongoose = require("mongoose")
-const route = require('./src/route/route');
+const route = require("./src/route/route");
 const app = express()
 
 
@@ -10,7 +10,7 @@ app.use( multer().any())
 app.use(express.json())
 
 
-mongoose.connect("mongodb+srv://Vashika:Vanshikaa08@cluster0.on6mcgr.mongodb.net/test")
+mongoose.connect("mongodb+srv://prakashurkude:prakash1998@cluster0.nuhssqs.mongodb.net/group8Database")
 .then(() => console.log("MongoDB is connected"))
 .catch((error) => console.log(error))
 

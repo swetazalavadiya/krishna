@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
-
 const auth = require("../middleware/auth")
 const aws= require("aws-sdk")
 
+const userController=require("../controller/usercontroller")
 
+router.post("/login",userController.logIn)
+
+module.exports=router
 
 
 
