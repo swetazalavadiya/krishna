@@ -28,10 +28,21 @@ const authorization=async function(req,res,next){
   try{
     const userId=req.params.userId
     const decodedToken=req.decodedToken
+    if(!userId){
+     
+      return res.status(400).send({status:false,msg:"please provide user ID"})  
+    }
     if(!isValidObjectId(userId)){
      
       return res.status(400).send({status:false,msg:"user id is not valid"}) 
     }
+
+    const user=await usermodel.findById(userId)
+
+    if(!user){
+     return res.status(404).send({status:false,msg:"user does not exist"})
+    }
+    
     if(decodedToken.userId!==userId){
       
       return res.status(403).send({status:false,msg:" not authorized user"})

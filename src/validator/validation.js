@@ -9,12 +9,13 @@
   //=============================Vlidator for Vlue(undefined,null and after trim lenth is zero)============================//
   
   const isValidName = function (value) {
-    if (typeof value === undefined || typeof value === null || value === "" ) {
+    if (typeof value === undefined || typeof value === null || value === "" ){
       return false;
     }
-    if (typeof value === "string" && value.trim().length > 0 ) {
-      return true;
+    if (typeof value === "string" && value.trim().length == 0 ) {
+      return false;
     }
+    return true
     
   }
 
@@ -57,9 +58,15 @@
     return /^[1-9][0-9]{5}$/.test(pincode);
   }
   
-   
+  const isValidAvailableSizes = (availablesizes) => {
+    for( i=0 ;i<availablesizes.length; i++){
+      if(!["S", "XS","M","X", "L","XXL", "XL"].includes(availablesizes[i])) return false
+    }
+    return true
+  };
+
   
   //===================================Export All validotor=================================//
   
-  module.exports = { isValidName, forName, isValidEmail, isValidNumber, isValidPassword, isValidObjectId, isValidPincode }
+  module.exports = { isValidName, forName, isValidEmail, isValidNumber, isValidPassword, isValidObjectId, isValidPincode,isValidAvailableSizes }
 

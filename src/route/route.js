@@ -1,12 +1,32 @@
 const express = require('express');
 const router = express.Router();
 const usercontroller= require('../controller/usercontroller')
+const productController=require("../controller/productController")
+const cartController=require("../controller/cartController")
 const {authentication,authorization}=require("../middleware/auth")
-const aws= require("aws-sdk")
+const aws= require("aws-sdk");
+const { APIGateway } = require('aws-sdk');
 // .................................................. Users Api ....................................................................
  router.post('/register', usercontroller.registerUser)
  router.post('/login', usercontroller.logIn)
  router.get('/user/:userId/profile', authentication,usercontroller.getUserParam)
+ router.put("/user/:userId/profile",authentication,authorization,usercontroller.updateUser)
+
+
+//  ..............................................Product API.........................................................
+router.post("/products",productController.createProduct)
+
+router.get("/products",productController.getAllProducts)
+router.get("/productDetails",productController.getFilteredProducts)
+router.get("/products/:productId",productController.getDetailsFromParam)
+router.put("/products/:productId",productController.updateProduct)
+router.delete("/products/:productId",productController.deleteById)
+
+//...........................................cart API.............................................................
+
+ router.post("/users/:userId/cart",/*authentication,authorization,*/cartController.createCart)
+ router.put("/users/:userId/cart",/*authentication,authorization,*/cartController.updateCart)
+ router.delete("/users/:userId/cart",/*authentication,authorization,*/cartController.deleteCart)
 
 
 
