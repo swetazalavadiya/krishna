@@ -1,26 +1,34 @@
 const cardModel = require("../models/cardModel")
 const constomerModel = require("../models/customerModel")
 
-exports.createCard = async (req, res) => {
+const createCard = async (req, res) => {
     try {
         let customerID = req.params.customerID
         let data = req.body
 
-        const costomer = await constomerModel.findOne({ customerID }, { firstName: 1, lastName: 1, _v: 0, _Id: 0 })
+        const costomer = await constomerModel.findOne({ customerID }, { firstName: 1, lastName: 1,  _id: 0 })
         if (!costomer) return res.status(404).send({ status: false, msg: "customer is not present" })
 
-        const priviousData = await cardModel.find({}, { cardNumber: 1, _id: 0, _v: 0 }).sort({ cardNumber: -1 }).limit(1);
-        if (!priviousData) (
-            data.cardNumber = C001
-        )
-        const card = priviousData[0].cardNumber.split()
-        const number = card[card.length - 1] + 1
-
-        data.cardNumber = C00, number
+        const priviousData = await cardModel.find({}, { cardNumber: 1, _id: 0}).sort({ cardNumber: -1 }).limit(1);
+        console.log(priviousData)
+        if (priviousData.length == 0) {
+        data.cardNumber = 'C001'
         data.customerID = customerID
         data.customerName = costomer.firstName + " " + costomer.lastName
+        const saveData = await cardModel.create(data)
+        return res.status(500).send({ status: true, msg: "created successfully", data: saveData }) 
+        }
+        
+        let c = priviousData[0].cardNumber.split('').length
+        let card = priviousData[0].cardNumber.split('').splice(1,c).join('')
+        let b =Number( card) 
+      
 
-        return res.status(500).send({ status: true, msg: "created successfully", data: data })
+        data.cardNumber = `C00${b+1}`
+        data.customerID = customerID
+        data.customerName = costomer.firstName + " " + costomer.lastName
+        const saveData = await cardModel.create(data)
+        return res.status(201).send({ status: true, msg: "created successfully", data: saveData }) 
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
@@ -28,7 +36,7 @@ exports.createCard = async (req, res) => {
 }
 
 
-exports.getAllCart = async (_, res) => {
+const getAllCart = async ( _, res) => {
 
     const get = await cardModel.find({}).populate("customerID")
 
@@ -36,3 +44,5 @@ exports.getAllCart = async (_, res) => {
 
     return res.status(200).send({ status: true, msg: get })
 }
+
+module.exports = {getAllCart ,createCard }

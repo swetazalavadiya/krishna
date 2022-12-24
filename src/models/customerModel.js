@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
-
+const { validUUID } = require("../validatare")
+const UUID = mongoose.Schema.Types.UUID
 
 const customerSchema = new mongoose.Schema({
     firstName :String,
@@ -8,7 +9,7 @@ const customerSchema = new mongoose.Schema({
     DOB :  Date,
     emailID  : {type :  String , required : true, unique : true},
     address :  String,
-    customerID :  String ,
+    customerID :  UUID,
     status :  { type :String , default : 'ACTIVE'}
 },{timestamps : true})
 

@@ -26,7 +26,7 @@ if(!isValidDob(DOB)) return res.status(400).send({status:false,msg:"DOB is not v
 if(!emailID) return res.status(400).send({status:false,msg:"emailId is not present"})
 if(!isValidEmail(emailID)) return res.status(400).send({status:false,msg:"emailId is not valid"})
 let emailUnique = await constomerModel.findOne({emailID})
-if(!emailUnique) return res.status(500).send({status : false ,msg : "please provide unique email number"})
+if(emailUnique) return res.status(500).send({status : false ,msg : "please provide unique email number"})
 if(!address) return res.status(400).send({status:false,msg:"address is not present"})
 
 
