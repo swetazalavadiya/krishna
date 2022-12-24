@@ -7,9 +7,9 @@ const { createCustomer, getCustomer, DeleteCustomer }=require("../controller/cus
 
 
 
-router.get("/getCostomer",getCustomer)
-router.post("/createCustomer",createCustomer)
-router.delete("/DeleteCustomer",DeleteCustomer)
+router.post("/createCustomer", createCustomer)
+router.get("/getCostomer/:customerID", getCustomer)
+router.delete("/DeleteCustomer/:customerID", DeleteCustomer)
 
 
 
