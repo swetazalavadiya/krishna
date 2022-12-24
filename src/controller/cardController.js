@@ -6,11 +6,11 @@ const createCard = async (req, res) => {
         let customerID = req.params.customerID
         let data = req.body
 
-        const costomer = await constomerModel.findOne({ customerID }, { firstName: 1, lastName: 1,  _id: 0 })
-        if (!costomer) return res.status(404).send({ status: false, msg: "customer is not present" })
+        const costomer = await constomerModel.findOne({ customerID : customerID}).select({firstName : 1,lastName : 1, _id : 0, })
+        if(!costomer) return res.status(404).send({ status: false, msg: "customer is not present" })
 
         const priviousData = await cardModel.find({}, { cardNumber: 1, _id: 0}).sort({ cardNumber: -1 }).limit(1);
-        console.log(priviousData)
+        
         if (priviousData.length == 0) {
         data.cardNumber = 'C001'
         data.customerID = customerID
@@ -37,12 +37,19 @@ const createCard = async (req, res) => {
 
 
 const getAllCart = async ( _, res) => {
+    try{
 
-    const get = await cardModel.find({}).populate("customerID")
-
-    if (!get) return res.status(404).send({ status: false, msg: "data not found" })
-
-    return res.status(200).send({ status: true, msg: get })
+       
+        const get = await cardModel.find({ status : 'ACTIVE'})
+    
+        if (!get) return res.status(404).send({ status: false, msg: "data not found" })
+    
+        return res.status(200).send({ status: true, msg: get })
+    }
+    catch(err)
+    {
+        return res.status(500).send({ status: false, msg: err.message })
+    }
 }
 
 module.exports = {getAllCart ,createCard }

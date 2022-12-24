@@ -9,7 +9,7 @@ const customerSchema = new mongoose.Schema({
     DOB :  Date,
     emailID  : {type :  String , required : true, unique : true},
     address :  String,
-    customerID :  UUID,
+    customerID :  String,
     status :  { type :String , default : 'ACTIVE'}
 },{timestamps : true})
 

@@ -10,13 +10,13 @@ const cardSchema = new mongoose.Schema({
     cardType :String ,
     customerName  : String,
     status : {
-    type :String,
+    type : String,
     enum:["ACTIVE","INACTIVE"],
-    Default: 'ACTIVE'
+    default: 'ACTIVE'
     },
     vision :  String,
     customerID : {
-    type: UUID,
+    type: String,
     ref: "Customer",
     unique:true
     }
