@@ -6,8 +6,6 @@ const app = express()
  
 mongoose.set('strictQuery', true);
 app.use(bodyParser.json())
- 
-
 
 mongoose.connect("mongodb+srv://bhupendra_:1B97GiRnjBfdXTL4@cluster5.fjlkdvr.mongodb.net/backend-engneering-test",{
     useNewUrlparser : true
