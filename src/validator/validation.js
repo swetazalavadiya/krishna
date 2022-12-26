@@ -1,9 +1,8 @@
 
 //-------------------------------------------  NAME  VALIDATION  ----------------------------------------------------
-  
-  const forName = function (value) {
-    return /^[A-Z][a-z]{1,}(?: [A-Z][a-z]+){0,}$/.test(value);
-  };
+const forName = function (value) {
+  return /^[a-z ,.'-]+$/i.test(value);
+  };
 
   let mongoose = require("mongoose")
   //=============================Vlidator for Vlue(undefined,null and after trim lenth is zero)============================//

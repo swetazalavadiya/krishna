@@ -1,3 +1,4 @@
+const userModel=require("../models/usermodel")
 const jwt=require("jsonwebtoken")
 const { isValidObjectId } = require("mongoose")
 
@@ -37,7 +38,7 @@ const authorization=async function(req,res,next){
       return res.status(400).send({status:false,msg:"user id is not valid"}) 
     }
 
-    const user=await usermodel.findById(userId)
+    const user=await userModel.findById(userId)
 
     if(!user){
      return res.status(404).send({status:false,msg:"user does not exist"})
@@ -50,7 +51,7 @@ const authorization=async function(req,res,next){
     next()
   }
   catch(error){
-    return res.status(500).send({status:false,msg:error,message})
+    return res.status(500).send({status:false,msg:error.message})
   }
 }
 

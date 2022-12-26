@@ -1,6 +1,6 @@
 const productModel = require("../models/productModel")
 
-const { isValidName, isValidNumber,isValidAvailableSizes } = require("../validator/validation")
+const { isValidName, isValidNumber,isValidAvailableSizes,isValidObjectId } = require("../validator/validation")
 
 const aws = require("aws-sdk")
 
@@ -96,7 +96,7 @@ const createProduct = async function (req, res) {
             data.productImage = uploadedFileURL
         }
         else {
-            res.status(400).send({ msg: "No file found" })
+            return res.status(400).send({ msg: "No file found" })
         }
 
         if (!data.productImage) {
@@ -134,57 +134,67 @@ const createProduct = async function (req, res) {
     }
 }
 
-
 const getAllProducts = async function (req, res) {
     try {
+        let obj= {isDeleted:false}
         if (Object.keys(req.query).length > 0) {
             if (Object.keys(req.query).includes("size")|| Object.keys(req.query).includes("name")||Object.keys(req.query).includes("priceLessThan")||Object.keys(req.query).includes("priceGreaterThan")||Object.keys(req.query).includes("priceSort") ) {
 
             if (Object.keys(req.query).includes("size")) {
                 if (!isValidName(req.query.size)) { return res.status(400).send({ status: false, message: "you selected the size field but value is not valid or empty." }) }
+            else{obj.availableSizes=req.query.size
+            }
             }
             if (Object.keys(req.query).includes("name")) {
                 if (!isValidName(req.query.name)) { return res.status(400).send({ status: false, message: "you selected the name field but value is not valid or empty." }) }
-
+           else{obj.title={$regex:req.query.name, $options:"i"}}
             }
 
             if (Object.keys(req.query).includes("priceLessThan")) {
                 if (!isValidName(req.query.priceLessThan)) { return res.status(400).send({ status: false, message: "you selected the priceLessThan field but value is not valid or empty." }) }
-                else { req.query.priceLessThan = Number(req.query.priceLessThan) }
+                else { req.query.priceLessThan = Number(req.query.priceLessThan) 
+                obj.price= {$lt: req.query.priceLessThan}}
             }
 
             if (Object.keys(req.query).includes("priceGreaterThan")) {
                 if (!isValidName(req.query.priceGreaterThan)) { return res.status(400).send({ status: false, message: "you selected the priceGreaterThan field but value is not valid or empty." }) }
-                else { req.query.priceGreaterThan = Number(req.query.priceGreaterThan) }
+                else { 
+                    req.query.priceGreaterThan = Number(req.query.priceGreaterThan)
+                    obj.price = {$gt: req.query.priceGreaterThan} }
             }
+            if (Object.keys(req.query).includes("priceGreaterThan") && Object.keys(req.query).includes("priceLessThan")) {
+                if (!isValidName(req.query.priceGreaterThan)) { return res.status(400).send({ status: false, message: "you selected the priceGreaterThan field but value is not valid or empty." }) }
+                else { 
+                    req.query.priceGreaterThan = Number(req.query.priceGreaterThan)
+                    req.query.priceLessThan = Number(req.query.priceLessThan) 
+                    obj.price= {$gt:req.query.priceGreaterThan, $lt: req.query.priceLessThan} }
+            }
+
 
             if (Object.keys(req.query).includes("priceSort")) {
                 if (!(['1', '-1'].includes(req.query.priceSort))) {
                     return res.status(400).send({ status: false, message: "sortPrice filter should contain 1 for ascending order and -1 for descending order." })
                 } else { req.query.priceSort = Number(req.query.priceSort) }
             }
+            
 
-            const fetchProducts = await productModel.find({ $or: [{ $or: [{ price: { $gt: req.query.priceGreaterThan } }, { price: { $lt: req.query.priceLessThan } }] }, { title: { $regex: req.query.name, $options: "i" } }, { availableSizes: req.query.size }] },{isDeleted:false}).sort({ price: req.query.priceSort })
+            const fetchProducts = await productModel.find({...obj}).sort({ price: req.query.priceSort })
 
-            if (fetchProducts.length > 0) { 
-                return res.status(200).send({ status: true, data: fetchProducts }) 
-            }
+            if (fetchProducts.length > 0) { return res.status(200).send({ status: true, data: fetchProducts }) }
             return res.status(404).send({ status: false, message: "No data found with this query" })
     
-        }else{
+            }else{
             return res.status(400).send({status:false, message:"query name should be name, size, priceGreaterThan, priceLessThan, priceSort"})
         }}
        else {
-    const fetchedAllProducts = await productModel.find({ isDeleted: false, deletedAt: null })
-    if (fetchedAllProducts.length > 0) { return res.status(200).send({ status: true, data: fetchedAllProducts }) }
-    return res.status(404).send({ status: false, message: "No data found" })
+        const fetchedAllProducts = await productModel.find({ isDeleted: false, deletedAt: null })
+        if (fetchedAllProducts.length > 0) { return res.status(200).send({ status: true, data: fetchedAllProducts }) }
+        return res.status(404).send({ status: false, message: "No data found" })
 }}
 
             catch (err) {
     return res.status(500).send({ status: false, message: "Internal Server Error" })
-}
-}
-
+}}
 
 
 const getDetailsFromParam = async function (req, res) {
@@ -263,13 +273,21 @@ const updateProduct = async function(req,res){
         const data = req.body;
         const files = req.files
         if(Object.keys(data).length ==0 && !files){
-            return res.status(400).send({status:false,message:"Please provide data in the request body"})
+            return res.status(400).send({status:false,message:"Please provide data to change"})
         }
 
-        const{title,description,price,currencyId,currencyFormat,isFreeShipping,style,availableSizes,installments,isDeleted} = data
+        const{title,description,price,currencyId,currencyFormat,isFreeShipping,style,availableSizes,installments} = data
 
-        if(isDeleted == true) return  res.status(404).send({status:false,message:"data not found"})
+        if(!isValidObjectId(productId)){
+            return res.status(400).send({status:false,msg:"provide valid product id"})
+        }
 
+        const product=await productModel.findOne({_id:productId,isDeleted:false})
+
+        if(!product) return  res.status(404).send({status:false,message:"product not found"})
+
+        let update={}
+ 
         if(title){
             if(!isValidName(title)){return res.status(400).send({status:false,message:"inValid title"})}
 
@@ -277,70 +295,72 @@ const updateProduct = async function(req,res){
             if(duplicateTitle){
                 return res.status(409).send({status:false,msg:"title is already exist"})
             }
+            update.title=title
         }
 
         if(description){
             if(!isValidName(description)){return res.status(400).send({status:false,message:"inValid description"})}
+            update.description=description
         }
         if(price){
             data.price=Number(price)
             if(isNaN(price)){return res.status(400).send({status:false,message:"inValid price"})}
+            update.price=price
         }
         if(currencyId){
             if(currencyId !== "INR"){return res.status(400).send({status:false,message:'currencyId must be "INR"'})}
+
+            update.currencyId=currencyId
         }
         if(currencyFormat){
             if(currencyFormat!=="₹"){return res.status(400).send({status:false,msg:"currency format must be '₹'"}) }
+            update.currencyFormat=currencyFormat
         }
         if (isFreeShipping) {
             if (["true", "false"].includes(isFreeShipping) === false) {
               return res
                 .status(400)
-                .send({ status: false, message: "isFreeShipping should be boolean" });}}
+                .send({ status: false, message: "isFreeShipping should be boolean" });}
+                update.isFreeShipping=isFreeShipping
+            }
         if(files && files.length>0){
             let uploadedFileURL= await uploadFile( files[0] )
-            data.productImage=uploadedFileURL
+            update.productImage=uploadedFileURL
         }
         if(style){
             if(!isValidName(style)){return res.status(400).send({status:false,message:"inValid size"})}
+            update.style=style
         }
   
         if (availableSizes) {
-                if (typeof (availableSizes == "string")) {
-                  if (!isValidAvailableSizes(availableSizes)) {
-                    return res
-                      .status(400)
-                      .send({
-                        status: false,
-                        message: "Invalid format of availableSizes",
-                      });
-                  }
-                  let availableSize = ["S", "XS", "M", "X", "L", "XXL", "XL"];
-                  for (let i = 0; i < availableSize.length; i++) {
-                    if (availableSizes == availableSize[i]) {
-                      continue;
-                    }
-                  }
-                } else {
-                  return res
-                    .status(400)
-                    .send({
-                      status: false,
-                      message: `avilablesize is ["S", "XS", "M", "X", "L", "XXL", "XL"] select size from avilablesize`,
-                    });
-                }
+            data.availableSizes = JSON.parse(availableSizes)
+            if (!Array.isArray(data.availableSizes) || data.availableSizes.length == 0) {
+                return res.status(400).send({ status: false, msg: "please provide valid sizes" })
+            }
+            const arrayEnum = ["S", "XS", "M", "X", "L", "XXL", "XL"]
 
+            for (let i = 0; i < data.availableSizes.length; i++) {
+                if (!arrayEnum.includes(data.availableSizes[i])) {
+                    return res.status(400).send({ status: false, msg: "please provide valid sizes" })
+                }
+            }
+
+            update.availableSizes=availableSizes
         }
         if(installments){
             if(isNaN(installments)){return res.status(400).send({status:false,message:"inValid installments"})}
+            update.installments=installments
         }
 
-        const updateUser = await productModel.findOneAndUpdate({_id:productId,isDeleted:false},{$set:{title:title,description:description,price:data.price,currencyFormat:currencyFormat,isFreeShipping:isFreeShipping,productImage:data.productImage,style:style,availableSizes:availableSizes,installments:installments}},{new:true})
+        const updateUser = await productModel.findByIdAndUpdate(
+            productId,
+            update,
+            {new:true})
         return res.status(200).send({status:true,message:"product profile updated sucessfully",data:updateUser})
     
     }catch(err){
-        return res.status(500).send({ status: false, error: err.message })        
-    }
+        return res.status(500).send({ status: false, error: err.message })
+    }
 }
 
 

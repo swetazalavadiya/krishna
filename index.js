@@ -3,6 +3,8 @@ const mongoose = require("mongoose")
 const route = require("./src/route/route");
 const app = express()
 
+mongoose.set("strictQuery",true)
+
 
 const multer= require("multer");
 

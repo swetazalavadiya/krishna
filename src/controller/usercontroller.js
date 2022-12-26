@@ -68,7 +68,17 @@ const registerUser = async function (req, res) {
 
         if (!req.body.password) { return res.status(400).send({ status: false, message: "password is mandatory" }) }
 
+        if (!req.body.address) { return res.status(400).send({ status: false, message: "address is mandatory" }) }
+
+
         req.body.address = JSON.parse(req.body.address)
+
+        if(!req.body.address.shipping){
+            return res.status(400).send({status:false,msg:"shipping field is mandatory"})
+        }
+        if(!req.body.address.billing){
+            return res.status(400).send({status:false,msg:"billing field is mandatory"})
+        }
 
         if (!req.body.address.shipping.street) { return res.status(400).send({ status: false, message: "street is mandatory" }) }
 
@@ -136,7 +146,7 @@ const logIn = async function (req, res) {
     try {
         const data = req.body
         const { email, password } = data
-        if (Object.keys(data).length == 0) { return res.status(400).send({ status: false, message: "body is important" }) }
+        if (Object.keys(data).length == 0) { return res.status(400).send({ status: false, message: "body is required" }) }
 
         if (!email) {
             return res.status(400).send({ status: false, msg: "please provide email" })
@@ -188,7 +198,21 @@ const logIn = async function (req, res) {
 
 const getUserParam = async function (req, res) {
     try {
+        const decodedToken=req.decodedToken
+        const userId=req.params.userId
 
+        if(!isValidObjectId(userId)){
+            return res.status(400).send({ status: true, message: "user ID is not valid"}) 
+        }
+        const user=await userModel.findOne({_id:userId})
+
+        if(!user){
+            return res.status(404).send({ status: true, message: "user not found"})
+        }
+        if(userId!==decodedToken.userId){
+
+            return res.status(403).send({ status: true, message: "forbidden request"})
+        }
         let { fname, lname, email, profileImage, phone, password, address, _id } = user
         let data = {}
         data.address = address
