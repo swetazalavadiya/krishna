@@ -154,12 +154,15 @@ const updateCart=async function(req,res){
   }
 
   if(removeProduct==1){
+    if(cart.items.length==0){
+      return res.status(404).send({status:false,msg:"you can not update an empty cart"}) 
+    }
     for(let i=0;i<cart.items.length;i++){
       if(cart.items[i].productId==productId){
         if(cart.items[i].quantity==1){
           const updatedCart=await cartModel.findByIdAndUpdate(
             cartId,
-           {$pull:{"items":{productId:productId}},$inc:{totalPrice:-product.price,totalItems:-(cart.items.length-1)}},
+           {$pull:{"items":{productId:productId}},$inc:{totalPrice:-product.price,totalItems:-1}},
             {new:true}
         )
       return res.status(200).send({status:true,msg:"updated successfully",data:updatedCart})
@@ -180,11 +183,14 @@ const updateCart=async function(req,res){
     }
 
   if(removeProduct==0){
+    if(cart.items.length==0){
+      return res.status(404).send({status:false,msg:"you can not update an empty cart"}) 
+    }
     for(let i=0;i<cart.items.length;i++)
     if(cart.items[i].productId==productId){
         const updatedCart=await cartModel.findByIdAndUpdate(
           cartId,
-         {$pull:{"items":{productId:productId}},$inc:{totalPrice:(-cart.items[i].quantity)*(product.price),totalItems:-(cart.items.length-1)}},
+         {$pull:{"items":{productId:productId}},$inc:{totalPrice:(-cart.items[i].quantity)*(product.price),totalItems:-1}},
           {new:true}
           )
           return res.status(200).send({status:true,msg:"updated successfully",data:updatedCart})
