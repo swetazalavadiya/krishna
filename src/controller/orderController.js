@@ -6,12 +6,10 @@ const { isValidObjectId, isValidName } = require("../validator/validation");
 const createOrder = async (req, res) => {
   try {
     let data = req.body;
-    let {status}=data
     let UserId = req.params.userId;
 
     if (!data.cartId||!isValidName(data.cartId)) return res.status(400).send({ staus: false, message: "Please Provide CardId" });
     if (!UserId) return res.status(400).send({ staus: false, message: "Please Provide UserId" });
-
     
     if (!isValidObjectId(data.cartId)) return res.status(400).send({ status: false, message: "CartID is not valid" });
     if (!isValidObjectId(UserId)) return res.status(400).send({ status: false, message: "userID is not valid" });
@@ -21,22 +19,18 @@ const createOrder = async (req, res) => {
       
     let cartDetail = await cartModel.findOne({ _id: data.cartId });
     if (!cartDetail) return res.status(404).send({ status: false, message: "Cart does not exist" });
-    
     if (cartDetail.userId != UserId) return res.status(400).send({ status: false, message: "user Id does not match with cart's user id" });
     
     let obj = {};
     obj.userId = UserId;
     obj.items = cartDetail.items;
-
     obj.totalPrice = cartDetail.totalPrice;
     obj.totalItems = cartDetail.totalItems;
     
-
     var totalQuantity = 0;
     for (let product of cartDetail.items) {
       totalQuantity += product.quantity;
     }
-
     obj.totalQuantity = totalQuantity;
 
     let createdata = await orderModel.create(obj);
@@ -56,21 +50,14 @@ const updateOrder = async function (req, res) {
   
       let orderDetails = await orderModel.findOne({_id: orderId,isDeleted: false,});
   
-      if (!["pending", "completed", "cancelled"].includes(status)) {
-        return res.status(400).send({status: false,message: "status should be from [pending, completed, cancelled]"});
-      }
+      if (![ "completed", "cancelled"].includes(status)) {return res.status(400).send({status: false,message: "status should be from [completed, cancelled]"});}
 
-      if(status==="pending"){
-        return res.status(400).send({status:false,msg:"order is already in pending status"})
-      }
+      if(status==="pending"){return res.status(400).send({status:false,msg:"order is already in pending status"})}
   
-      if (orderDetails.status === "completed") {
-      return res.status(400).send({status: false,message: "Order completed, now its status can not be updated",});
-      }
+      if (orderDetails.status === "completed") {return res.status(400).send({status: false,message: "Order completed, now its status can not be updated",});}
   
-      if (orderDetails.cancellable === false ) {
-        return res.status(400).send({ status: false, message: "Order is not cancellable" });
-      } 
+      if (orderDetails.cancellable === false ) {return res.status(400).send({ status: false, message: "Order is not cancellable" });} 
+
       if(status==="cancelled"){
        orderDetails.isDeleted=true
       }

@@ -2,9 +2,9 @@ const userModel=require("../models/usermodel")
 const jwt=require("jsonwebtoken")
 const { isValidObjectId } = require("mongoose")
 
-
 const authentication=async function(req,res,next){
-try{    let token=req.headers["authorization"]
+try{
+  let token=req.headers["authorization"]
 
     if(!token){
         return res.status(400).send({status:false,msg:"token is not present"})
@@ -29,25 +29,14 @@ const authorization=async function(req,res,next){
   try{
     const userId=req.params.userId
     const decodedToken=req.decodedToken
-    if(!userId){
-     
-      return res.status(400).send({status:false,msg:"please provide user ID"})  
-    }
-    if(!isValidObjectId(userId)){
-     
-      return res.status(400).send({status:false,msg:"user id is not valid"}) 
-    }
+    if(!userId){return res.status(400).send({status:false,msg:"please provide user ID"})  }
+    if(!isValidObjectId(userId)){return res.status(400).send({status:false,msg:"user id is not valid"}) }
 
     const user=await userModel.findById(userId)
 
-    if(!user){
-     return res.status(404).send({status:false,msg:"user does not exist"})
-    }
+    if(!user){return res.status(404).send({status:false,msg:"user does not exist"})}
     
-    if(decodedToken.userId!==userId){
-      
-      return res.status(403).send({status:false,msg:" not authorized user"})
-    }
+    if(decodedToken.userId!==userId){return res.status(403).send({status:false,msg:" not authorized user"})}
     next()
   }
   catch(error){
