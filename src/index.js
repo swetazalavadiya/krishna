@@ -1,12 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Assignment1 from './day3.js'
+import './index.css'
+import Assignment2 from './form'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
-     <Assignment1/>
+     
+     <Assignment2/>
   </React.StrictMode>
 );
 
