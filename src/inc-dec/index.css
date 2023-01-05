@@ -1,0 +1,19 @@
+.countAssignment{
+  border: solid darkblue ;
+  background-color: lightgray;
+  padding: 10px;
+  margin: 20px;
+}
+.input{
+  background-color: lightpink;
+  border: 2px solid black;
+  font-weight: bold;
+  color: black;
+
+}
+.input2{
+    background-color: lightslategrey;
+    border: 2px solid black ;
+    font-weight: bolder;
+    color: black;
+  }
