@@ -8,9 +8,9 @@
   },
   "repository": {
     "type": "git",
-    "url": " "
+    "url": " https://github.com/swetazalavadiya/krishna.git"
   },
-  "author": "Vanshika Dubey",
+  "author": "Sweta Zalavadiya",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.0.3",
