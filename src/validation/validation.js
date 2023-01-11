@@ -17,7 +17,7 @@ module.exports = {
     Subject: joi
       .string()
       .required()
-      .messages({ "any only": "Name is mandatory field." })
+      .messages({ "any only": "Subject is mandatory field." })
       .regex(/^[a-z ,.'-]+$/i),
   }),
 
@@ -29,7 +29,7 @@ module.exports = {
       .regex(/^[a-z ,.'-]+$/i),
     Subject: joi
       .string()
-      .messages({ "any only": "Name is mandatory field." })
+      .messages({ "any only": "Subject is mandatory field." })
       .regex(/^[a-z ,.'-]+$/i),
   }),
 
@@ -57,7 +57,7 @@ module.exports = {
       .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,15}$/),
     Subject: joi
       .string()
-      .messages({ "any only": "Name is mandatory field." })
+      .messages({ "any only": "Subject is mandatory field." })
       .regex(/^[a-z ,.'-]+$/i),
   }),
 };

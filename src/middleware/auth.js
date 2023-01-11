@@ -2,23 +2,16 @@ const jwt = require("jsonwebtoken");
 const studentModel = require("../models/studentmodel");
 const mongoose = require("mongoose");
 
-//............................................................. AUTHENTICATION .............................................................................................
-
 const authentication = function (req, res, next) {
   try {
     if (!req.headers["x-api-key"]) {
-      return res
-        .status(400)
-        .send({ status: false, message: "token must be present in headers" });
+      return res.status(400).send({ status: false, message: "token must be present in headers" });
     } else {
       jwt.verify(
-        req.headers["x-api-key"],
-        "student",
+        req.headers["x-api-key"],"sweta",
         function (err, decodedToken) {
           if (err) {
-            return res
-              .status(401)
-              .send({ status: false, name: err.name, message: err.message });
+            return res.status(401).send({ status: false, name: err.name, message: err.message });
           } else {
             req.loginid = decodedToken.id;
             next();
