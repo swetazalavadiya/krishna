@@ -1,17 +1,42 @@
 const adminModel = require('../Models/adminModel')
-const {uploadFile} = require('../aws')
-exports.Question = async (req, res)=> {
+const questionModel = require('../Models/questionModel')
+const jwt = require('jsonwebtoken')
+
+const createAdmin = async (req, res)=> {
     try{
         let data = req.body
-        let {Image, Video} = req.files
-        let { question , I, II, III, IV ,rightAnswer } = data
 
-        data.Image = uploadFile(Image[0])
-        data.Video = uploadFile(Video[0])
-        let ques = await  adminModel.create(data)
-        return res.status(201).send({status : true, message :" successfully created question", data : ques})
+        let admin = await adminModel.create(data)
+        return res.status(201).send({status : true, message : "successfully created admin", data : admin})
 
     }catch(err){
-        return res.status(500).send({message : err.message})
+        return res.status(500).send({status : false , message : err.message})
     }
 }
+
+
+const adminLogin = async (req, res)=>{
+    try{
+        let data = req.body
+         let { email, password} = data
+       
+
+         if(!email) return res.status(400).send({status : false, message : "please provide email"});
+         if(!password) return res.status(400).send({status : false, message : "please provide password"});
+
+         let payload = {
+            email : email
+            ,password : password
+         }
+
+         const  token = jwt.sign(payload,"Examination" ,  {expiresIn: "60m"} )
+          
+         return res.status(200).send({ status: true, message: "token is successfully generated", data: token})
+        }
+    catch(err){
+        return res.status(500).send({status : false , message : err.message}) 
+    }
+}
+module.exports = { createAdmin , adminLogin}
+
+
