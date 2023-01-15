@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 exports.authentication = async (req, res, next) => {
 
     try {
-        let token = Headers['authorization']
+        let token =req.headers['authorization']
 
         token = slice(0, 7)
 

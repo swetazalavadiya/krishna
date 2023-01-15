@@ -1,5 +1,6 @@
-const adminModel = require('../Models/questionModel')
+const questionModel = require('../Models/questionModel')
 const {uploadFile} = require('../aws')
+
 exports.Question = async (req, res)=> {
     try{
         let data = req.body
@@ -8,11 +9,15 @@ exports.Question = async (req, res)=> {
 
         data.Image =  await uploadFile(Image[0])
         data.Video =  await uploadFile(Image[1])
-        let ques = await  adminModel.create(data)
+        let ques = await  questionModel.create(data)
         return res.status(201).send({status : true, message :" successfully created question", data : ques})
 
     }catch(err){
         return res.status(500).send({message : err.message})
     }
 }
+
+
+
+
 

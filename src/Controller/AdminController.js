@@ -37,6 +37,34 @@ const adminLogin = async (req, res)=>{
         return res.status(500).send({status : false , message : err.message}) 
     }
 }
+
+exports.getque= async(req,res)=>{
+
+    const data= await questionModel.find({})
+    
+    return res.status(200).send({status:true,msg:data})
+    }
+    
+    
+    exports.editQue=async (req,res)=>{
+    
+        const queId=req.params.queId
+        
+        if(!queId) return res.status(400).send({msg:"queId is not present"})
+    
+    const existQue= await questionModel.findOne({_id:queId})
+    if(!existQue) return res.status(404).send({status:false,msg:"que is not present"})
+    
+    const updatedData= await questionModel.findOneAndUpdate({_id:queId},{$set:
+    req.body
+    })
+    
+    return res.status(200).send({status:true,msg:updatedData})
+    }
+
+
+
+
 module.exports = { createAdmin , adminLogin}
 
 
