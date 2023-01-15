@@ -11,4 +11,5 @@ router.get('/getData', authentication , getque)
 router.put("/editQue/:queId",authentication,editQue)
 router.post("/studentLogin",studentLogin)
 router.get("/studentGetQue/:queId",studentGetQue)
+
 module.exports = router
