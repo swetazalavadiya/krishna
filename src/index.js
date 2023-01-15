@@ -9,7 +9,7 @@ app.use(multer().any());
 
 
 mongoose.set('strictQuery', false)
-mongoose.connect("mongodb+srv://bhupendra_:1B97GiRnjBfdXTL4@cluster5.fjlkdvr.mongodb.net/Examination", {
+mongoose.connect("url", {
 useNewUrlParser: true
 })
 .then( () => console.log("MongoDb is connected"))
